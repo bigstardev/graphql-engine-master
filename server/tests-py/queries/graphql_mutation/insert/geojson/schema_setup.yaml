@@ -1,0 +1,102 @@
+type: bulk
+args:
+
+
+- type: run_sql
+  args:
+    sql: |
+      CREATE EXTENSION IF NOT EXISTS postgis;
+      DO $$
+      BEGIN
+        IF PostGIS_lib_version() ~ '^3.*' THEN
+          CREATE EXTENSION IF NOT EXISTS postgis_raster;
+        END IF;
+      END$$;
+      CREATE EXTENSION IF NOT EXISTS postgis_topology;
+      CREATE TABLE drone_3d_location (
+        drone_id INTEGER PRIMARY KEY,
+        location GEOGRAPHY(Pointz)
+      );
+      CREATE TABLE landmark (
+        id SERIAL PRIMARY KEY,
+        name TEXT,
+        type TEXT,
+        location GEOGRAPHY(Point)
+      );
+      CREATE TABLE road (
+        id SERIAL PRIMARY KEY,
+        name TEXT,
+        path GEOGRAPHY(LINESTRING)
+      );
+      CREATE TABLE service_locations (
+        id SERIAL PRIMARY KEY,
+        service TEXT,
+        locations GEOGRAPHY(MULTIPOINT)
+      );
+      CREATE TABLE route (
+        id SERIAL PRIMARY KEY,
+        name TEXT,
+        route GEOGRAPHY(MULTILINESTRING)
+      );
+      CREATE TABLE area (
+        id SERIAL PRIMARY KEY,
+        name TEXT,
+        area GEOGRAPHY(POLYGON)
+      );
+      CREATE TABLE compounds (
+        user_id integer PRIMARY KEY,
+        name TEXT,
+        areas GEOGRAPHY(MULTIPOLYGON)
+      );
+      CREATE TABLE geometry_collection (
+        id SERIAL PRIMARY KEY,
+        geometries GEOGRAPHY(GEOMETRYCOLLECTION)
+      );
+
+- type: track_table
+  args:
+    schema: public
+    name: drone_3d_location
+
+#landmark table
+- type: track_table
+  args:
+    schema: public
+    name: landmark
+
+#straight_road table
+- type: track_table
+  args:
+    schema: public
+    name: road
+
+#curved_road table
+- type: track_table
+  args:
+    schema: public
+    name: service_locations
+
+
+#route table
+- type: track_table
+  args:
+    schema: public
+    name: route
+
+#Area table
+- type: track_table
+  args:
+    schema: public
+    name: area
+
+#Compounds table
+- type: track_table
+  args:
+    schema: public
+    name: compounds
+
+#Generic geometry table
+- type: track_table
+  args:
+    schema: public
+    name: geometry_collection

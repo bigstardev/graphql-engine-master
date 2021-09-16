@@ -1,0 +1,18 @@
+type: bulk
+args:
+
+- type: run_sql
+  args:
+    sql: |
+      CREATE TABLE hello (
+        id SERIAL PRIMARY KEY,
+        code TEXT,
+        name TEXT
+      );
+      INSERT INTO hello VALUES
+      (1, 'abc', 'Some data');
+
+- type: track_table
+  args:
+    schema: public
+    name: hello

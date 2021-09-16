@@ -1,0 +1,39 @@
+CREATE OR REPLACE function hdb_catalog.#{qualifiedTriggerName}() RETURNS trigger
+  LANGUAGE plpgsql
+  AS $$
+  DECLARE
+    _old record;
+    _new record;
+    _data json;
+  BEGIN
+    IF TG_OP = 'UPDATE' THEN
+      _old := #{oldRow};
+      _new := #{newRow};
+    ELSE
+    /* initialize _old and _new with dummy values for INSERT and UPDATE events*/
+      _old := row((select 1));
+      _new := row((select 1));
+    END IF;
+    _data := json_build_object(
+      'old', #{oldPayloadExpression},
+      'new', #{newPayloadExpression}
+    );
+    BEGIN
+    /* NOTE: formerly we used TG_TABLE_NAME in place of tableName here. However in the case of
+    partitioned tables this will give the name of the partitioned table and since we use the table name to
+    get the event trigger configuration from the schema, this fails because the event trigger is only created
+    on the original table.  */
+      IF (TG_OP <> 'UPDATE') OR (_old <> _new) THEN
+        PERFORM hdb_catalog.insert_event_log(CAST(#{schemaName} AS text), CAST(#{tableName} AS text), CAST('#{name}' AS text), TG_OP, _data);
+      END IF;
+      EXCEPTION WHEN undefined_function THEN
+        IF (TG_OP <> 'UPDATE') OR (_old *<> _new) THEN
+          PERFORM hdb_catalog.insert_event_log(CAST(#{schemaName} AS text), CAST(#{tableName} AS text), CAST('#{name}' AS text), TG_OP, _data);
+        END IF;
+    END;
+
+    RETURN NULL;
+  END;
+$$;
+DROP TRIGGER IF EXISTS #{qualifiedTriggerName} ON #{qualifiedTable};
+CREATE TRIGGER #{qualifiedTriggerName} AFTER #{operation} ON #{qualifiedTable} FOR EACH ROW EXECUTE PROCEDURE hdb_catalog.#{qualifiedTriggerName}();

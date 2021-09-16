@@ -1,0 +1,20 @@
+- description: Clear metadata
+  url: /v1/metadata
+  status: 200
+  response:
+    message: success
+  query:
+    type: clear_metadata
+    args: {}
+
+- description: Check if metadata is cleared
+  url: /v1/query
+  status: 200
+  # FIXME:- Using export_metadata will dump
+  # the source configuration dependent on --database-url
+  # response:
+  #   version: 2
+  #   tables: []
+  query:
+    type: export_metadata
+    args: {}

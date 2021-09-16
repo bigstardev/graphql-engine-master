@@ -1,0 +1,11 @@
+type: bulk
+args:
+- type: run_sql
+  args:
+    sql: |
+      drop table article;
+      drop table author;
+      drop table test;
+      drop view malicious_view;
+      drop table malicious;
+    cascade: true

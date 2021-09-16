@@ -1,0 +1,22 @@
+description: Nested select on article with limit expecting error
+url: /v1/graphql
+status: 200
+response:
+  errors:
+  - extensions:
+      code: validation-failed
+      path: $.selectionSet.article.args.limit
+    message: expected a 32-bit integer for type "Int", but found a string
+query:
+  query: |
+    query {
+      article(limit: "3", offset: 1) {
+        id
+        title
+        content
+        author {
+          id
+          name
+        }
+      }
+    }

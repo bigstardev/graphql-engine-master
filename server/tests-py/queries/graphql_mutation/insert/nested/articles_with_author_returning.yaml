@@ -1,0 +1,60 @@
+description: Insert article along with author and returning author with articles as relationship
+url: /v1/graphql
+status: 200
+response:
+  data:
+    insert_article:
+      affected_rows: 2
+      returning:
+      - id: 5
+        title: Article by Author 5
+        content: Content for Article 5
+        tags: '[]'
+        author:
+          id: 5
+          name: Author 5
+          articles_aggregate:
+            aggregate:
+              count: 1
+          articles:
+          - id: 5
+            title: Article by Author 5
+            content: Content for Article 5
+query:
+  query: |
+    mutation {
+      insert_article(
+        objects: [{
+          id: 5
+          title: "Article by Author 5"
+          content: "Content for Article 5"
+          tags: "[]"
+          author: {
+            data: {
+              id: 5
+              name: "Author 5"
+            }
+          }
+        }]
+      ){
+        affected_rows
+        returning{
+          id
+          title
+          content
+          tags
+          author{
+            id
+            name
+            articles_aggregate{
+              aggregate{count}
+            }
+            articles{
+              id
+              title
+              content
+            }
+          }
+        }
+      }
+    }

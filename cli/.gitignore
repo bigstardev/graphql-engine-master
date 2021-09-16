@@ -1,0 +1,5 @@
+vendor/
+vendor.orig/
+_output/
+*.temp
+bin/

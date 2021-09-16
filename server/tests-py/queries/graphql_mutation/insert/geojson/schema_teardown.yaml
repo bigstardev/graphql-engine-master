@@ -1,0 +1,14 @@
+type: bulk
+args:
+
+- type: run_sql
+  args:
+    sql: |
+      DROP TABLE drone_3d_location;
+      DROP TABLE landmark;
+      DROP TABLE road;
+      DROP TABLE service_locations;
+      DROP TABLE route;
+      DROP TABLE area;
+      DROP TABLE compounds;
+      DROP TABLE geometry_collection;
